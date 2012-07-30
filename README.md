@@ -41,6 +41,7 @@ $value  = mixed value.
 $exp    = OPTIONAL; expire time  by seconds (integer). default is 0 ( disabled expire).  
 $result = boolean, when success to set returns true, or when failed returns false.  
   
+    $result = $kvs->append<KeyName>( $value, $exp );
   
 ## REMOVE the specified index of values into key name
 If you want to remove the specified index of values into existing key name of <KeyName>.  
@@ -48,7 +49,7 @@ If you want to remove the specified index of values into existing key name of <K
 $index  = index key of values.  
 $result = boolean, when success to set returns true, or when failed returns false.  
   
-    $result $kvs->remove<KeyName>( $index );
+    $result = $kvs->remove<KeyName>( $index );
   
   
   
@@ -58,7 +59,7 @@ If you want to pull ( to get and remove the value ) the specified index of value
 $index  = index key of values.  
 $value  = mixed value when you set before, or failed, returns false.  
   
-    $result $kvs->pull<KeyName>( $index );
+    $result = $kvs->pull<KeyName>( $index );
   
   
 ## INCREMENT the value to key name
@@ -67,7 +68,7 @@ If you want increment value to existing key name of <KeyName>.
 $index  = index key of values.  
 $result = boolean, when success to set returns true, or when failed returns false.  
   
-    $result $kvs->increment<KeyName>( $index );
+    $result = $kvs->increment<KeyName>( $index );
   
   
   
@@ -76,6 +77,6 @@ If you want decrement from existing key name of <KeyName>.
   
 $value  = decremented value  
   
-    $result $kvs->decrement<KeyName>( $index );
+    $result = $kvs->decrement<KeyName>( $index );
   
   
