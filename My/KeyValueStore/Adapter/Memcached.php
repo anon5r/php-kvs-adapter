@@ -56,7 +56,11 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 	protected function _setBase( $name, array $arguments = null ) {
 		extract( self::_convertArguments( 'set', $arguments ) );
 		$this->_connect();
-		return self::$_connection->set( $name, $value );
+		if ( isset( $expiration ) && $expiration != null ) {
+			return self::$_connection->set( $name, $value, $expiration );
+		} else {
+			return self::$_connection->set( $name, $value );
+		}
 	}
 	
 	/**
