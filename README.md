@@ -10,7 +10,12 @@ You can put this files on your system path of the configured "include_path" in p
   
 # How to use
   
-    $kvs = Recs_Apps_KeyValueStore::factory( $configs );
+    $config = array(
+      'host'    => 'localhost',
+      'port'    => 11211,
+      'timeout' => 5,
+    );
+    $kvs = My_KeyValueStore::factory( $configs );
   
 ## SET the value for key name
 If you want to set $value to key name of <KeyName> and result by boolean.  
