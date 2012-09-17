@@ -71,7 +71,7 @@
  *
  * $result $kvs->decrement<KeyName>( $index );
  *
- * @author anon <anon@anoncom.net>
+ * anon <anon@anoncom.net>
  */
 abstract class My_KeyValueStore_Adapter_Abstract {
 	
@@ -80,16 +80,16 @@ abstract class My_KeyValueStore_Adapter_Abstract {
 	 * @var array
 	 */
 	protected static $_methodPrefixes = array(
-		'set',			// Set or overwrite the value to the key
-		'get',			// Get a value from the key
-		'append',		// Add the value specified in the key
-		'remove',		// Remove the value of a particular index from the array values ​​in the key
-		'pull',			// Retrieve the value from the particular array index in the key. (Removing while to get)
-		'fetch',		// Obtain the specific range of values ​​from the key.
-		'fetchAll',		// Get all the values ​​from the key. (Same as "get")
-		'increment',	// Increment a value to the key
-		'decrement',	// Decrement a value from the key
-		'drop',			// Remove the key
+		'set',			// Set or overwrite value to the key
+		'get',			// Get value from the key
+		'append',		// Append to value to the values into the key
+		'remove',		// Remove the value having specific index from the key
+		'pull',			// Pull the value having specific index from the key
+		'fetch',		// Fetch the values within a given index from the key
+		'fetchAll',		// Fetch all values from the key (Same as "get")
+		'increment',	// Increment value to the key
+		'decrement',	// Decrement value from the key 
+		'drop',			// Drop the key and value
 	);
 	
 	/**
@@ -153,6 +153,12 @@ abstract class My_KeyValueStore_Adapter_Abstract {
 	
 	
 	/**
+	 * Allow only to use specified keys
+	 * @var array
+	 */
+	protected $_allowedKeys = array();
+	
+	/**
 	 * Connection instances pool
 	 * @var array
 	 */
@@ -187,6 +193,8 @@ abstract class My_KeyValueStore_Adapter_Abstract {
 	 */
 	public function __construct( array $config ) {
 		
+		$this->_checkExtension();
+		
 		if ( isset( $config[ 'host' ] ) == false ) {
 			require_once 'My/KeyValueStore/Exception.php';
 			throw new My_KeyValueStore_Exception( 'Configuration array must have a key for "host" that names the key value store instance.' );
@@ -210,12 +218,51 @@ abstract class My_KeyValueStore_Adapter_Abstract {
 	}
 	
 	/**
+	 * Check using extension
+	 * @return bool
+	 */
+	abstract protected function _checkExtension();
+	
+	/**
 	 * Creates a connection to the key value store.
 	 *
 	 * @return void
 	 */
 	abstract protected function _connect();
 	
+	
+	
+	/**
+	 * Add allowed key to list
+	 * @param mixed $key
+	 * @return My_KeyValueStore
+	 */
+	public function _addAllowKey( $key ) {
+		$this->_allowedKeys[] = $key;
+		return $this;
+	}
+	
+	/**
+	 * Check the key allowed specified keys
+	 * @param string $key
+	 * @return bool
+	 */
+	protected function _isAllowed( $key ) {
+		if ( count( $this->_allowedKeys ) > 0 ) {
+			return isset( $this->_allowdKeys[ $key ] );
+		}
+		return true;
+	}
+	
+	/**
+	 * Set allowed keys list
+	 * @param array $keys
+	 * @return My_KeyValueStore
+	 */
+	public function _setAllowKeys( array $keys ) {
+		$this->_allowedKeys = $keys;
+		return $this;
+	}
 	
 	/**
 	 * Set the delimiter character to concatenates a prefix appended to the key name
@@ -329,13 +376,18 @@ abstract class My_KeyValueStore_Adapter_Abstract {
 		foreach ( self::$_methodPrefixes as $prefix ) {
 			if ( strpos( $name, $prefix, 0 ) === 0 ) {
 				$keyName = substr( $name, strlen( $prefix ) );
-	
+				
+				if ( $this->_isAllowed( $keyName ) == false ) {
+					require_once 'My/KeyValueStore/Exception.php';
+					throw new My_KeyValueStore_Exception( 'Specified key "' . $keyName . '" does not allowed on this class.', My_KeyValueStore_Exception::CODE_KEY_NOT_ALLOWED_KEY );
+				}
+				
 				if ( is_array( $this->_keyPrefix ) && count( $this->_keyPrefix ) > 0 ) {
-					// キー接頭辞が設定されている場合は、キー名の接頭辞に追加する
+					// If the suffix key is set, add the suffix key name
 					$keyName = implode( $this->_keyPrefixDelimiter, $this->_keyPrefix ) . $this->_keyPrefixDelimiter . $keyName;
 				}
 				if ( is_array( $this->_keySuffix ) && count( $this->_keySuffix ) > 0 ) {
-					// キー接尾辞が設定されている場合は、キー名の接尾辞に追加する
+					// If the suffix key is set, add the suffix key name
 					$keyName .= $this->_keySuffixDelimiter . implode( $this->_keySuffixDelimiter, $this->_keySuffix );
 				}
 				$baseMethod = sprintf( '_%sBase', $prefix );

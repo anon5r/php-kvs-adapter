@@ -2,7 +2,7 @@
 
 /**
  * Simplify and basicaly operation for key value store
- * @author anon <anon@anoncom.net>
+ * @author Takeshi Fujimoto
  * @since May 25, 2012
  */
 class My_KeyValueStore {
@@ -10,25 +10,38 @@ class My_KeyValueStore {
 	
 	
 	/**
-	 * Factory for KeyValueStore_Adapter_Abstract classes.
-	 * 
+	 * Factory for My_KeyValueStore_Adapter_Abstract classes.
+	 *
+	 * First argument may be a string containing the base of the adapter class
+	 * name, e.g. 'Memcached' corresponds to class My_KeyValueStore_Memcached.  This
+	 * name is currently case-insensitive, but is not ideal to rely on this behavior.
+	 * If your class is named 'My_Company_Fallabs_KyotoTycoon', where 'My_Company' 
+	 * is the namespace and 'Fallabs_KyotoTycoon' is the adapter name, 
+	 * it is best to use the name exactly as it is defined in the class. 
+	 * This will ensure proper use of the factory API.
+	 *
 	 * First argument may alternatively be an object of type Zend_Config.
 	 * The adapter class base name is read from the 'adapter' property.
-	 * The adapter config parameter hostname are read from the 'host' property.
-	 * The adapter config parameter port numer are read from the 'port' property.
-	 * The adapter config parameter connection timeout are read from the 'timeout' property.
-	 * 
+	 * The adapter config parameters are read from the 'params' property.
+	 *
+	 * Second argument is optional and may be an associative array of key-value
+	 * pairs.  This is used as the argument to the adapter constructor.
+	 *
+	 * If the first argument is of type Zend_Config, it is assumed to contain
+	 * all parameters, and the second argument is ignored.
+	 *
+	 *
 	 * @param mixed $adapter String name of base adapter class, or an array of configs
+	 * @param mixed $config  OPTIONAL; an array with adapter parameters.
 	 * @return My_KeyValueStore_Adapter_Abstract
 	 * @throws My_KeyValueStore_Exception
 	 */
 	public static function factory( $config ) {
 		
-		
 		/*
 		 * Verify that adapter parameters are in an array.
 		 */
-		if ( $config instanceof Zend_Config == false && !is_array( $config ) ) {
+		if ( $config instanceof Zend_Config == false || !is_array( $config ) ) {
 			/**
 			 * @see My_KeyValueStore_Exception
 			 */
@@ -105,5 +118,7 @@ class My_KeyValueStore {
 		
 		return $instance;
 	}
+	
+	
 	
 }

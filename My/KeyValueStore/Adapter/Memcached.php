@@ -9,19 +9,30 @@ require_once 'My/KeyValueStore/Adapter/Abstract.php';
 class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstract {
 	
 	/**
+	 * Check using extension
+	 * @return bool
+	 */
+	protected function _checkExtension() {
+		
+		if ( extension_loaded( 'memcached' ) == false ) {
+			require_once 'My/KeyValueStore/Exception.php';
+			throw new My_KeyValueStore_Exception( 'The Memcached extension is required for this adapter but the extension is not loaded', My_KeyValueStore_Exception::CODE_EXTENSION_UNAVAILABLE );
+		}
+		if ( class_exists( 'Memcached' ) == false ) {
+			require_once 'My/KeyValueStore/Exception.php';
+			throw new My_KeyValueStore_Exception( 'PHP Mecached driver does not loaded.', My_KeyValueStore_Exception::CODE_CLASS_NOTEXIST );
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * Creates a Memcached object and connects to the key value store.
      *
      * @return void
      * @throws My_KeyValueStore_Exception
 	 */
 	public function _connect() {
-		
-		if ( extension_loaded( 'memcached' ) == false ) {
-			throw new My_KeyValueStore_Exception( 'The Memcached extension is required for this adapter but the extension is not loaded' );
-		}
-		if ( class_exists( 'Memcached' ) == false ) {
-			throw new My_KeyValueStore_Exception( 'PHP Mecached driver does not loaded.' );
-		}
 		
 		$instanceHash = sprintf( 'memcached://%s:%d', $this->_host, $this->_port );
 		
@@ -30,7 +41,6 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 			self::$_connection = self::$_pool[ $instanceHash ];
 			return;
 		}
-		
 		
 		self::$_connection = new Memcached( $instanceHash );
 		self::$_connection->addServer( $this->_host, $this->_port );
@@ -56,11 +66,7 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 	protected function _setBase( $name, array $arguments = null ) {
 		extract( self::_convertArguments( 'set', $arguments ) );
 		$this->_connect();
-		if ( isset( $expiration ) && $expiration != null ) {
-			return self::$_connection->set( $name, $value, $expiration );
-		} else {
-			return self::$_connection->set( $name, $value );
-		}
+		return self::$_connection->set( $name, $value );
 	}
 	
 	/**
@@ -133,8 +139,8 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 		}
 		// _setBase 実行用パラメータ生成
 		$setArgs = array(
-			$values,
-			$expiration,
+				$values,
+				$expiration,
 		);
 		return $this->_setBase( $name, $setArgs );
 	}
@@ -217,8 +223,8 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 		}
 		// _setBase 実行用パラメータ生成
 		$setArgs = array(
-			$values,
-			$expiration,
+				$values,
+				$expiration,
 		);
 		if ( $this->_setBase( $name, $setArgs ) == false ) {
 			require_once 'My/KeyValueStore/Exception.php';
@@ -301,7 +307,7 @@ class My_KeyValueStore_Adapter_Memcached extends My_KeyValueStore_Adapter_Abstra
 			$counter = $this->_getBase( $name, null );
 			// FIXME WARNING: signed int型に変換しているため、signed intの幅を超える桁数の場合は、
 			// 以降計算されない、あるいは負の数値に変換される可能性があります
-			$counter = (int)$counter;
+			$counter = intval( $counter );
 			$counter += $offset;
 			$this->_setBase( $name, array( $counter, 0 ) );
 		}
