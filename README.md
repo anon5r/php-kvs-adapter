@@ -10,10 +10,11 @@ You can put this files on your system path of the configured "include_path" in p
   
 # How to use
   
-    $config = array(
-      'host'    => 'localhost',
-      'port'    => 11211,
-      'timeout' => 5,
+    $configs = array(
+        'adapter' => 'Memcached', // Use adapter name
+        'host'    => 'localhost', // Connection hostname
+        'port'    => 11211,       // Connection port number
+        'timeout' => 3,           // Connecition timeout seconds
     );
     $kvs = My_KeyValueStore::factory( $configs );
   
@@ -84,4 +85,22 @@ $value  = decremented value
   
     $result = $kvs->decrement<KeyName>( $index );
   
+  
+  
+  
+## Allowed key name only use
+This is able to prevent the mis-specification due to a misspelling of the name of the key when coding.  
+  
+    $allowd = array(
+        'AllowedKey',
+    );
+    $kvs->_setAllowKeys( $allowd );
+    $kvs->setAllowedKey( 'set the value' );	// success
+    $kvs->setNotAllowedKey( 'set the value' );	// failed and throw exception
+  
+Or, you can use following way  
+  
+    $kvs->_addAllowKey( 'Add' );
+    $kvs->setAdd( 'set the value' );	// success
+    $kvs->setNotSetKeyname( 'set the value' );	// failed and throw exception
   
