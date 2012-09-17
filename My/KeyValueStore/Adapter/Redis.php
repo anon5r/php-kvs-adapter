@@ -33,10 +33,6 @@ class My_KeyValueStore_Adapter_Redis extends My_KeyValueStore_Adapter_Abstract {
      * @throws My_KeyValueStore_Exception
 	 */
 	protected function _connect() {
-	
-		if ( class_exists( 'Redis' ) == false ) {
-			throw new My_KeyValueStore_Exception( 'PHP Redis driver does not loaded.' );
-		}
 		
 		$instanceHash = sprintf( 'redis://%s:%d', $this->_host, $this->_port );
 		
