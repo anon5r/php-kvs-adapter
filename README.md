@@ -1,4 +1,4 @@
-Various Key Value Store common interface for PHP
+Various Key Value Store adapters for PHP
 =========================
 
 It provides a common interface to KVS simply in a variety for PHP.  
@@ -22,7 +22,7 @@ You can put this files on your system path of the configured "include_path" in p
 If you want to set $value to key name of <KeyName> and result by boolean.  
   
 $value  = mixed value.  
-$exp    = OPTIONAL; expire time  by seconds (integer). default is 0 ( disabled expire).  
+$exp    = _OPTIONAL;_ expire time  by seconds (integer). default is 0 ( disabled expire).  
 $result = boolean, when success to set returns true, or when failed returns false.  
     
     $result = $kvs->set<KeyName>( $value, $exp );
@@ -44,7 +44,7 @@ However this option only enabled when the value of array.
 If you want to apped $value to existing key name of <KeyName>, You can append the value specified it.  
   
 $value  = mixed value.  
-$exp    = OPTIONAL; expire time  by seconds (integer). default is 0 ( disabled expire).  
+$exp    = _OPTIONAL;_ expire time  by seconds (integer). default is 0 ( disabled expire).  
 $result = boolean, when success to set returns true, or when failed returns false.  
   
     $result = $kvs->append<KeyName>( $value, $exp );
@@ -88,7 +88,7 @@ $value  = decremented value
   
   
   
-## Allowed key name only use
+# Allowed key name only use
 This is able to prevent the mis-specification due to a misspelling of the name of the key when coding.  
   
     $allowd = array(
