@@ -85,3 +85,22 @@ $value  = decremented value
     $result = $kvs->decrement<KeyName>( $index );
   
   
+  
+  
+# Allowed key name only use
+This is able to prevent the mis-specification due to a misspelling of the name of the key when coding.  
+  
+    $allowd = array(
+        'AllowedKey',
+    );
+    $kvs->_setAllowKeys( $allowd );
+    $kvs->setAllowedKey( 'set the value' );	// success
+    $kvs->setNotAllowedKey( 'set the value' );	// failed and throw exception
+  
+Or, you can use following way  
+  
+    $kvs->_addAllowKey( 'Add' );
+    $kvs->setAdd( 'set the value' );	// success
+    $kvs->setNotSetKeyname( 'set the value' );	// failed and throw exception
+  
+
