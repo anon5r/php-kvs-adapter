@@ -10,4 +10,7 @@ class My_KeyValueStore_Exception extends Exception {
 	const CODE_CONNECTION_REJECTED		= 1002;
 	const CODE_CONNECTION_CLOSED		= 1010;
 	const CODE_KEY_NOTFOUND				= 4000;
+	const CODE_KEY_NOT_ALLOWED_KEY		= 4010;
+
+	const CODE_INTERNAL_ERROR			= 9000;
 }
